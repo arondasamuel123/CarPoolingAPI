@@ -1,12 +1,14 @@
+import os
+
 class Config:
     '''
     '''
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://user:123456@localhost/api'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     
 class DevConfig(Config):
     '''
     '''
-    
+    DEBUG = True
 
 class ProdConfig(Config):
     '''
