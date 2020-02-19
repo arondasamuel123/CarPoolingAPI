@@ -31,11 +31,19 @@ class User(db.Model):
 class Workspace(db.Model):
     __tablename__='workspaces'
     id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), unique=True)
     admin_id = db.Column(db.String(255), db.ForeignKey('users.public_id'))
     description = db.Column(db.String(255))
     cars = db.relationship('Car', backref='workspace', lazy='dynamic')
     workspaceusers = db.relationship('WorkspaceUser', backref='workspace', lazy='dynamic')
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete_space(self):
+        db.session.delete(self)
+        db.session.commit()
     
     
 class Car(db.Model):
