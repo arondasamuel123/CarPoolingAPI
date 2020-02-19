@@ -1,3 +1,5 @@
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import db
 
 class User(db.Model):
@@ -5,11 +7,26 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email =db.Column(db.String(255), unique=True)
     public_id = db.Column(db.String(255),unique=True)
+    username = db.Column(db.String(255), unique=True)
     pass_secure = db.Column(db.String(255))
     workspaces = db.relationship('Workspace', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
     workspaceusers = db.relationship('WorkspaceUser', backref='user', lazy='dynamic')
     
+    @property
+    def password():
+        return AttributeError("Password attribute cannot be read")
+
+    @password.setter
+    def password(self, pass_entry):
+        self.pass_secure = generate_password_hash(pass_entry)
+
+    def check_password(self, pass_entry):
+        return check_password_hash(self.pass_secure, pass_entry)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 class Workspace(db.Model):
     __tablename__='workspaces'

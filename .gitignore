@@ -5,3 +5,7 @@ __pycache__/
 # Environment Files
 virtual/
 .vscode
+
+# Startup scripts
+start.ps1
+start.sh
