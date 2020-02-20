@@ -36,6 +36,14 @@ class Workspace(db.Model):
     description = db.Column(db.String(255))
     cars = db.relationship('Car', backref='workspace', lazy='dynamic')
     workspaceusers = db.relationship('WorkspaceUser', backref='workspace', lazy='dynamic')
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_space(self):
+        db.session.delete(self)
+        db.session.commit()
     
     
 class Car(db.Model):
