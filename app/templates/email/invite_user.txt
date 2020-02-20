@@ -1,0 +1,3 @@
+Hello
+You have been invited to workspace {{workspace.name}} by {{workspace.user.username}}
+If you wish to accept your invitation here is your join code - {{invite.join_code}}

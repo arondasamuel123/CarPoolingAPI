@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from . import main
 from ..decorators import token_required
-from ..models import User, Workspace, ApiResponse, Car
+from ..models import User, ApiResponse
 from .. import db
 
 @main.route("/user/register", methods = ['POST'])
@@ -71,96 +71,3 @@ def update_user(current_user):
             response = ApiResponse('ok', {'message': 'Username changed successfully', 'public_id': current_user.public_id})
             return jsonify(response.__dict__), 200
         
-@main.route('/workspaces', methods=['GET'])
-@token_required
-def get_workspaces():
-    data = request.get_json()
-    
-    workspaces = Workspace.query.all()
-    
-    output = []
-    for workspace in workspaces:
-        workspace_data= {}
-        workspace_data['name']= workspace.name
-        workspace_data['admin_id']= workspace.admin_id
-        workspace_data['description']= workspace.description
-        output.append(workspace_data)
-
-    response = ApiResponse('ok', {'workspaces': output})
-    return jsonify(response.__dict__)
-
-@main.route('/workspace/<public_id>', methods=['GET'])
-@token_required
-def get_workspace_by_id(current_user, public_id):
-    data = request.get_json()
-    
-    workspace = Workspace.query.filter_by(admin_id=current_user.public_id).all()
-    output = []
-
-    for work in workspace:
-        work_data = {}
-        work_data['name']= work.name
-        work_data['description'] = work.description
-        output.append(work_data)
-    
-    response = ApiResponse('ok', {'workspace': output})
-    return jsonify(response.__dict__)
-
-@main.route('/workspace', methods=['POST'])
-@token_required
-def create_workspace(current_user):
-    data = request.get_json()
-    workspace = Workspace.query.filter_by(admin_id=current_user.public_id, name = data['name']).first()
-    
-    new_workspace = Workspace(name=data['name'], description=data['description'], admin_id=current_user.public_id)
-    
-    if  workspace:
-        response = ApiResponse('ok', {'message': 'Workspace exists'})
-        return jsonify(response.__dict__)
-    else:
-        new_workspace.save()
-        response = ApiResponse('ok', {'message': 'Workspace created successfully'})
-        return jsonify(response.__dict__)
-    
-@main.route('/workspace/<admin_id>', methods=['DELETE'])
-@token_required
-def delete_workspace(current_user, admin_id):
-    data =request.get_json()
-    delete_workspace = Workspace.query.filter_by(admin_id=current_user.public_id).first()
-    delete_workspace.delete_space()
-    
-    response = ApiResponse('ok', {'message':"Workspace deleted"})
-    return jsonify(response.__dict__)
-
-@main.route('cars', methods = ['POST'])
-@token_required
-def create_car(current_user):
-    data = requets.get_json()
-
-    car = Car.query.filter_by(workspace_id=workspace_id).first()
-
-    new_car = Workspace(owner_name=data['owner_name'], noofseats=data['noofseats'], workspace_id=workspace_id, license_plate=data['license_plate'])
-
-
-@main.route('/cars/<int:id>', methods =['DELETE'])
-@token_required
-def delete_car(current_user,id):
-    delete_car = Car.query.filter_by(id=id).first()
-    delete_car.delete_car()
-
-@main.route('/cars/<int:id>', methods =['GET'])
-@token_required
-def get_car_by_workspace_id(current_user,workspace_id):
-    my_car = Car.query.filter_by(workspace_id=workspace_id).first()
-
-    
-
-
-
-
-        
-
-    
-    
-
-    

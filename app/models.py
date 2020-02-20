@@ -31,8 +31,9 @@ class User(db.Model):
 class Workspace(db.Model):
     __tablename__='workspaces'
     id = db.Column(db.Integer,primary_key=True)
+    public_id = db.Column(db.String(), unique = True)
     name = db.Column(db.String(255))
-    admin_id = db.Column(db.String(255), db.ForeignKey('users.public_id'))
+    admin_id = db.Column(db.String(255), db.ForeignKey('users.public_id'), unique = True)
     description = db.Column(db.String(255))
     cars = db.relationship('Car', backref='workspace', lazy='dynamic')
     workspaceusers = db.relationship('WorkspaceUser', backref='workspace', lazy='dynamic')
@@ -48,6 +49,7 @@ class Workspace(db.Model):
 class Car(db.Model):
     __tablename__='cars'
     id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String())
     owner_name = db.Column(db.String(255))
     noofseats = db.Column(db.Integer)
     workspace_id = db.Column(db.Integer, db.ForeignKey('workspaces.id'))
@@ -80,13 +82,29 @@ class Review(db.Model):
 class WorkspaceUser(db.Model):
     __tablename__='workspace_user'
     id = db.Column(db.Integer, primary_key=True)
-    workspace_id = db.Column(db.Integer, db.ForeignKey('workspaces.id'))
+    workspace_id = db.Column(db.String(255), db.ForeignKey('workspaces.public_id'))
     user_id = db.Column(db.String(255), db.ForeignKey('users.public_id'))
     
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+class WorkspaceInvite(db.Model):
+    __tablename__ = 'workspace_invites'
+    id = db.Column(db.Integer, primary_key=True)
+    workspace_id = db.Column(db.String())
+    email = db.Column(db.String())
+    confirmed = db.Column(db.Boolean, default = False)
+    join_code = db.Column(db.String())
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 class ApiResponse():
     def __init__(self, status, data):
         self.status = status
         self.data = data
 
     def __repr__(self):
-        return f"<ApiResponse {status}>"
+        return f"<ApiResponse {self.status}>"
