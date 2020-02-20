@@ -66,3 +66,10 @@ class WorkspaceUser(db.Model):
     workspace_id = db.Column(db.Integer, db.ForeignKey('workspaces.id'))
     user_id = db.Column(db.String(255), db.ForeignKey('users.public_id'))
     
+class ApiResponse():
+    def __init__(self, status, data):
+        self.status = status
+        self.data = data
+
+    def __repr__(self):
+        return f"<ApiResponse {status}>"
