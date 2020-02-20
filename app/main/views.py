@@ -4,11 +4,7 @@ from datetime import datetime, timedelta
 
 from . import main
 from ..decorators import token_required
-<<<<<<< Updated upstream
-from ..models import User
-=======
 from ..models import User, Workspace, ApiResponse
->>>>>>> Stashed changes
 from .. import db
 
 @main.route("/user", methods = ['POST'])
@@ -72,9 +68,6 @@ def update_user(current_user):
         else:
             current_user.username = data.get('username')
             db.session.commit()
-<<<<<<< Updated upstream
-            return jsonify({'status': 'ok', 'status_code': 200, 'data': {'message': 'Username changed successfully'}})
-=======
             response = ApiResponse('ok', {'message': 'Username changed successfully'})
             return jsonify(response.__dict__), 200
         
@@ -142,6 +135,5 @@ def delete_workspace(current_user, admin_id):
 
     
     
->>>>>>> Stashed changes
 
     
