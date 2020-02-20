@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 
 from . import main
 from ..decorators import token_required
-from ..models import User, Workspace, ApiResponse
+from ..models import User, Workspace, ApiResponse, Car
 from .. import db
 
-@main.route("/user", methods = ['POST'])
+@main.route("/user/register", methods = ['POST'])
 def create_account():
     data = request.get_json()
 
@@ -15,12 +15,12 @@ def create_account():
         if all([data.get('username'), data.get('email'), data.get('password')]):
             if User.query.filter_by(email = data['email'], username = data['username']).first():
                 response = ApiResponse('ok', {'message': 'Sorry, username or email already taken'})
-                return jsonify(response.__dict__)
+                return jsonify(response.__dict__)                                                                                                                                                                         
 
             new_user = User(email = data['email'],  password = data['password'], public_id = str(uuid.uuid4()), username = data['username'])
             new_user.save()
 
-            response = ApiResponse('ok', {'message': 'User Created Successfully'})
+            response = ApiResponse('ok', {'message': 'User Created Successfully', 'public_id': new_user.public_id})
             return jsonify(response.__dict__)
         else:
             response = ApiResponse('error', {'message': 'Required Parameters Missing'})
@@ -29,7 +29,7 @@ def create_account():
         response = ApiResponse('error', {'message': 'Required Parameters Cannot be empty'})
         return jsonify(response.__dict__), 401
 
-@main.route("/user")
+@main.route("/user/login", methods = ['POST'])
 def login():
     auth = request.get_json()
 
@@ -49,10 +49,10 @@ def login():
             response = ApiResponse('ok', {'message': 'Authentication Failed'})
             return jsonify(response.__dict__), 401
 
-    response = ApiResponse('ok', {'token': token.decode('utf-8'), 'expiry': token_expiry.isoformat()})
+    response = ApiResponse('ok', {'token': token.decode('utf-8'), 'expiry': token_expiry.isoformat(), 'public_id': user.public_id})
     return jsonify(response.__dict__)
 
-@main.route('/user', methods = ['PUT'])
+@main.route('/user/update', methods = ['PUT'])
 @token_required
 def update_user(current_user):
     data = request.get_json()
@@ -68,7 +68,7 @@ def update_user(current_user):
         else:
             current_user.username = data.get('username')
             db.session.commit()
-            response = ApiResponse('ok', {'message': 'Username changed successfully'})
+            response = ApiResponse('ok', {'message': 'Username changed successfully', 'public_id': current_user.public_id})
             return jsonify(response.__dict__), 200
         
 @main.route('/workspaces', methods=['GET'])
@@ -83,7 +83,7 @@ def get_workspaces():
         workspace_data= {}
         workspace_data['name']= workspace.name
         workspace_data['admin_id']= workspace.admin_id
-        workspace_data['dscription']= workspace.description
+        workspace_data['description']= workspace.description
         output.append(workspace_data)
 
     response = ApiResponse('ok', {'workspaces': output})
@@ -131,6 +131,33 @@ def delete_workspace(current_user, admin_id):
     
     response = ApiResponse('ok', {'message':"Workspace deleted"})
     return jsonify(response.__dict__)
+
+@main.route('cars', methods = ['POST'])
+@token_required
+def create_car(current_user):
+    data = requets.get_json()
+
+    car = Car.query.filter_by(workspace_id=workspace_id).first()
+
+    new_car = Workspace(owner_name=data['owner_name'], noofseats=data['noofseats'], workspace_id=workspace_id, license_plate=data['license_plate'])
+
+
+@main.route('/cars/<int:id>', methods =['DELETE'])
+@token_required
+def delete_car(current_user,id):
+    delete_car = Car.query.filter_by(id=id).first()
+    delete_car.delete_car()
+
+@main.route('/cars/<int:id>', methods =['GET'])
+@token_required
+def get_car_by_workspace_id(current_user,workspace_id):
+    my_car = Car.query.filter_by(workspace_id=workspace_id).first()
+
+    
+
+
+
+
         
 
     

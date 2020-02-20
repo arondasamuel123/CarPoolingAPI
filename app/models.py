@@ -6,7 +6,7 @@ class User(db.Model):
     __tablename__='users'
     id = db.Column(db.Integer, primary_key=True)
     email =db.Column(db.String(255), unique=True)
-    public_id = db.Column(db.String(255),unique=True)
+    public_id = db.Column(db.String(255), unique=True)
     username = db.Column(db.String(255), unique=True)
     pass_secure = db.Column(db.String(255))
     workspaces = db.relationship('Workspace', backref='user', lazy='dynamic')
@@ -45,14 +45,22 @@ class Workspace(db.Model):
         db.session.delete(self)
         db.session.commit()
     
-    
 class Car(db.Model):
     __tablename__='cars'
     id = db.Column(db.Integer, primary_key=True)
     owner_name = db.Column(db.String(255))
     noofseats = db.Column(db.Integer)
     workspace_id = db.Column(db.Integer, db.ForeignKey('workspaces.id'))
+    license_plate = db.Column(db.String(255))
     trips = db.relationship('Trip', backref='car', lazy='dynamic')
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+            
 class Trip(db.Model):
     __tablename__='trips'
     id = db.Column(db.Integer, primary_key=True)
@@ -61,6 +69,7 @@ class Trip(db.Model):
     to_dest = db.Column(db.String(255))
     completed = db.Column(db.Boolean)
     reviews = db.relationship('Review', backref='trip',lazy='dynamic')
+
 class Review(db.Model):
     __tablename__='reviews'
     id = db.Column(db.Integer, primary_key=True)
