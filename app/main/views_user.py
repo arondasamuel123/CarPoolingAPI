@@ -16,12 +16,13 @@ def create_account():
             if User.query.filter_by(email = data['email'], username = data['username']).first():
                 response = ApiResponse('ok', {'message': 'Sorry, username or email already taken'})
                 return jsonify(response.__dict__)                                                                                                                                                                         
+            
+            else:
+                new_user = User(email = data['email'],  password = data['password'], public_id = str(uuid.uuid4()), username = data['username'])
+                new_user.save()
 
-            new_user = User(email = data['email'],  password = data['password'], public_id = str(uuid.uuid4()), username = data['username'])
-            new_user.save()
-
-            response = ApiResponse('ok', {'message': 'User Created Successfully', 'public_id': new_user.public_id})
-            return jsonify(response.__dict__)
+                response = ApiResponse('ok', {'message': 'User Created Successfully', 'public_id': new_user.public_id})
+                return jsonify(response.__dict__)
         else:
             response = ApiResponse('error', {'message': 'Required Parameters Missing'})
             return jsonify(response.__dict__), 401

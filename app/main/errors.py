@@ -5,7 +5,7 @@ from ..models import ApiResponse
 
 @main.app_errorhandler(404)
 def error404(error):
-    response = ApiResponse('error', {'message': 'Endpoint was not found. Known endpoints include /user, /workspace'})
+    response = ApiResponse('error', {'message': 'Endpoint was not found. Known endpoints include /user, /workspaces'})
     return jsonify(response.__dict__),404
 
 @main.app_errorhandler(500)
